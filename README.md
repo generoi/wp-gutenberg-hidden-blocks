@@ -2,6 +2,8 @@
 
 > Adds a block setting for specifying screen specific visibillity
 
+![Screen Recording 2021-04-09 at 13 40 37](https://user-images.githubusercontent.com/302736/114213661-aa0b8780-9939-11eb-9cd5-fdc0af68e114.gif)
+
 ## Development
 
 Install dependencies
