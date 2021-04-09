@@ -19,7 +19,7 @@
   "devDependencies": {
     "@tinypixelco/laravel-mix-wp-blocks": "^1.0.0",
     "@wordpress/babel-preset-default": "^4.13.0",
-    "@wordpress/base-styles": "^2.0.0",
+    "@wordpress/base-styles": "^2.1.0",
     "@wordpress/browserslist-config": "^2.6.0",
     "@wordpress/dependency-extraction-webpack-plugin": "^2.5.0",
     "babel-eslint": "^10.1.0",
@@ -36,5 +36,7 @@
     "stylelint-config-standard": "^20.0.0",
     "vue-template-compiler": "^2.6.12"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@wordpress/icons": "^2.10.1"
+  }
 }

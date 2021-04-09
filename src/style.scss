@@ -1,2 +1,27 @@
-// Load all frontend styles
-@import './blocks/example/assets/style';
+@import 'node_modules/@wordpress/base-styles/breakpoints';
+
+$screen-sizes: (
+  mobile: $break-mobile,
+  tablet: $break-small,
+  desktop: $break-large,
+);
+
+@each $screen, $breakpoint in $screen-sizes {
+  @media (min-width: #{$breakpoint}) {
+    [data-hide-from="#{$screen}"] {
+      display: none !important;
+    }
+  }
+}
+
+[data-show-from] {
+  display: none !important;
+}
+
+@each $screen, $breakpoint in $screen-sizes {
+  @media (min-width: #{$breakpoint}) {
+    [data-show-from="#{$screen}"] {
+      display: revert !important;
+    }
+  }
+}
