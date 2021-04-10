@@ -1,5 +1,4 @@
-[data-hide-from],
-[data-show-from] {
+[data-hide-on] {
   position: relative;
 
   &::before {
@@ -18,14 +17,10 @@
   }
 }
 
-[data-hide-from]::before {
-  content: 'Hide from ' attr(data-hide-from);
+[data-hide-on]::before {
+  content: 'Hide on ' attr(data-hide-on);
 }
 
-[data-show-from]::before {
-  content: 'Show from ' attr(data-show-from);
-}
-
-[data-hide-from][data-show-from]::before {
-  content: 'Show from ' attr(data-show-from) ' and hide from ' attr(data-hide-from);
+[data-preview-hidden-blocks] {
+  @import 'style';
 }

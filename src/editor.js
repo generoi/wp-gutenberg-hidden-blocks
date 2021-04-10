@@ -1,16 +1,20 @@
-import { addFilter } from '@wordpress/hooks';
+import { addFilter, applyFilters } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
-// import { hasBlockSupport } from '@wordpress/blocks';
+import { hasBlockSupport } from '@wordpress/blocks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { InspectorAdvancedControls } from '@wordpress/block-editor';
 import { Button, ButtonGroup, BaseControl } from '@wordpress/components';
 import { mobile, tablet, desktop } from '@wordpress/icons';
+import { registerPlugin } from '@wordpress/plugins';
+import { PluginMoreMenuItem } from '@wordpress/edit-post';
+import { useState } from '@wordpress/element';
 
 function isBlockSupported(blockType) {
-  return blockType || true;
+  // Just default to whatever blocks support custom class names (most).
+  return hasBlockSupport(blockType, 'customClassName', true);
 }
 
-const SCREEN_SIZES = [
+const DEFAULT_SCREEN_SIZES = [
   { name: 'mobile', label: 'Mobile', icon: mobile },
   { name: 'tablet', label: 'Tablet', icon: tablet },
   { name: 'desktop', label: 'Desktop', icon: desktop },
@@ -20,11 +24,12 @@ function addAttribute(settings) {
   if (isBlockSupported(settings.name)) {
     settings.attributes = {
       ...settings.attributes,
-      hideFrom: {
-        type: 'string',
-      },
-      showFrom: {
-        type: 'string',
+      hideOn: {
+        type: 'array',
+        items: {
+          type: 'string',
+        },
+        default: [],
       },
     };
   }
@@ -35,14 +40,12 @@ function addAttribute(settings) {
 const withDataAttributes = createHigherOrderComponent((BlockListBlock) => {
   return (props) => {
     const { name, attributes } = props;
-    const hasHiddenAttributes = attributes.showFrom || attributes.hideFrom;
 
-    if (isBlockSupported(name) && hasHiddenAttributes) {
+    if (isBlockSupported(name) && attributes.hideOn.length) {
       let wrapperProps = props.wrapperProps;
       wrapperProps = {
         ...wrapperProps,
-        'data-show-from': attributes.showFrom,
-        'data-hide-from': attributes.hideFrom,
+        'data-hide-on': attributes.hideOn.join(' '),
       };
 
       return <BlockListBlock { ...props } wrapperProps={ wrapperProps } />;
@@ -54,45 +57,34 @@ const withDataAttributes = createHigherOrderComponent((BlockListBlock) => {
 const withInspectorControl = createHigherOrderComponent((BlockEdit) => {
   return (props) => {
     if (isBlockSupported(props.name) && props.isSelected) {
+      const screenSizes = applyFilters('wp-gutenberg-hidden-blocks.screenSizes', DEFAULT_SCREEN_SIZES);
 
       return (
         <>
           <BlockEdit { ...props } />
           <InspectorAdvancedControls>
-            <BaseControl id="show-from" label={ __('Show from screen and larger') }>
+            <BaseControl id="hide-on" label={ __('Hide on screens') }>
               <div>
                 <ButtonGroup>
-                  { SCREEN_SIZES.map(({name, label, icon}) => {
+                  { screenSizes.map(({name, label, icon}) => {
+                    const onClick = () => {
+                        const hideOn = props.attributes.hideOn;
+
+                        props.setAttributes({
+                          hideOn: hideOn.includes(name)
+                            ? hideOn.filter((screen) => screen !== name)
+                            : hideOn.concat([name]),
+                        });
+                    };
+
                     return (
                       <Button
                         icon={ icon }
                         label={ label }
                         isSecondary
                         isSmall
-                        isPressed={ props.attributes.showFrom === name }
-                        onClick={ () => props.setAttributes({
-                          showFrom: props.attributes.showFrom !== name ? name : undefined
-                        }) }
-                      />
-                    );
-                  }) }
-                </ButtonGroup>
-              </div>
-            </BaseControl>
-            <BaseControl id="hide-from" label={ __('Hide from screen and larger') }>
-              <div>
-                <ButtonGroup>
-                  { SCREEN_SIZES.map(({name, label, icon}) => {
-                    return (
-                      <Button
-                        icon={ icon }
-                        label={ label }
-                        isSecondary
-                        isSmall
-                        isPressed={ props.attributes.hideFrom === name }
-                        onClick={ () => props.setAttributes({
-                          hideFrom: props.attributes.hideFrom !== name ? name : undefined
-                        }) }
+                        isPressed={ props.attributes.hideOn.includes(name) }
+                        onClick={ onClick }
                       />
                     );
                   }) }
@@ -108,13 +100,46 @@ const withInspectorControl = createHigherOrderComponent((BlockEdit) => {
 }, 'withInspectorControl');
 
 function addSaveProps(extraProps, blockType, attributes) {
-  if (isBlockSupported(blockType)) {
-    extraProps['data-show-from'] = attributes.showFrom || null;
-    extraProps['data-hide-from'] = attributes.hideFrom || null;
+  if (isBlockSupported(blockType) && attributes.hideOn.length) {
+    extraProps['data-hide-on'] = attributes.hideOn.join(' ');
   }
 
   return extraProps;
 }
+
+const MyButtonMoreMenuItemTest = () => (
+    <PluginMoreMenuItem
+        icon={ image }
+        onClick={ () => {
+            alert( 'Button Clicked' );
+        } }
+    >
+        More Menu Item
+    </PluginMoreMenuItem>
+);
+
+const HiddenBlocksMenuItem = () => {
+  const [isPreviewing, setIsPreviewing ] = useState(false);
+
+  return (
+    <PluginMoreMenuItem
+      icon={ mobile }
+      onClick={ () => {
+        if (isPreviewing) {
+          delete document.body.dataset.previewHiddenBlocks;
+          setIsPreviewing(false);
+        } else {
+          document.body.dataset.previewHiddenBlocks = 'true';
+          setIsPreviewing(true);
+        }
+      } }
+    >
+      { isPreviewing ? __('Show all hidden blocks') : __('Preview hiding screen specific blocks') }
+    </PluginMoreMenuItem>
+  );
+};
+
+registerPlugin('wp-gutenberg-hidden-blocks', { render: HiddenBlocksMenuItem });
 
 addFilter(
   'blocks.registerBlockType',

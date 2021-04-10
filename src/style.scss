@@ -1,27 +1,19 @@
 @import 'node_modules/@wordpress/base-styles/breakpoints';
 
-$screen-sizes: (
-  mobile: $break-mobile,
-  tablet: $break-small,
-  desktop: $break-large,
-);
-
-@each $screen, $breakpoint in $screen-sizes {
-  @media (min-width: #{$breakpoint}) {
-    [data-hide-from="#{$screen}"] {
-      display: none !important;
-    }
+@media (max-width: #{$break-small - 1px}) {
+  [data-hide-on*="mobile"] {
+    display: none !important;
   }
 }
 
-[data-show-from] {
-  display: none !important;
+@media (min-width: #{$break-small}) and (max-width: #{$break-large - 1px}) {
+  [data-hide-on*="tablet"] {
+    display: none !important;
+  }
 }
 
-@each $screen, $breakpoint in $screen-sizes {
-  @media (min-width: #{$breakpoint}) {
-    [data-show-from="#{$screen}"] {
-      display: revert !important;
-    }
+@media (min-width: #{$break-large}) {
+  [data-hide-on*="desktop"] {
+    display: none !important;
   }
 }
