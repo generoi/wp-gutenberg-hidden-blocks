@@ -107,17 +107,6 @@ function addSaveProps(extraProps, blockType, attributes) {
   return extraProps;
 }
 
-const MyButtonMoreMenuItemTest = () => (
-    <PluginMoreMenuItem
-        icon={ image }
-        onClick={ () => {
-            alert( 'Button Clicked' );
-        } }
-    >
-        More Menu Item
-    </PluginMoreMenuItem>
-);
-
 const HiddenBlocksMenuItem = () => {
   const [isPreviewing, setIsPreviewing ] = useState(false);
 
