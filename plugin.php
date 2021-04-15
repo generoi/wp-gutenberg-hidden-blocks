@@ -49,9 +49,9 @@ class Plugin
     public function init()
     {
         if (!is_admin()) {
-            add_action('enqueue_block_assets', [$this, 'block_assets']);
+            add_action('enqueue_block_assets', [$this, 'block_assets'], 0);
         }
-        add_action('enqueue_block_editor_assets', [$this, 'block_editor_assets']);
+        add_action('enqueue_block_editor_assets', [$this, 'block_editor_assets'], 0);
 
         foreach (glob(__DIR__ . '/src/blocks/*/*.php') as $file) {
             $composer = __NAMESPACE__ . str_replace(
