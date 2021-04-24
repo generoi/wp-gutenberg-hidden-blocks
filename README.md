@@ -4,6 +4,10 @@
 
 ![Screen Recording 2021-04-09 at 13 40 37](https://user-images.githubusercontent.com/302736/114213661-aa0b8780-9939-11eb-9cd5-fdc0af68e114.gif)
 
+## Installation
+
+    composer require generoi/wp-gutenberg-hidden-blocks
+
 ## Usage
 
 ```js
