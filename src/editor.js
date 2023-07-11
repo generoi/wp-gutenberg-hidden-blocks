@@ -68,7 +68,7 @@ const withInspectorControl = createHigherOrderComponent((BlockEdit) => {
                 <ButtonGroup>
                   { screenSizes.map(({name, label, icon}) => {
                     const onClick = () => {
-                        const hideOn = props.attributes.hideOn;
+                        const hideOn = props.attributes.hideOn || [];
 
                         props.setAttributes({
                           hideOn: hideOn.includes(name)
@@ -83,7 +83,7 @@ const withInspectorControl = createHigherOrderComponent((BlockEdit) => {
                         label={ label }
                         isSecondary
                         isSmall
-                        isPressed={ props.attributes.hideOn.includes(name) }
+                        isPressed={ props.attributes.hideOn?.includes?.(name) }
                         onClick={ onClick }
                       />
                     );
